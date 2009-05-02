@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <site site="http://www.sesamestreet.org"
         plugin="http://www.sesamestreet.org/DAMAsset/street/videoQueue_400x300_detail_list.swf"
-            initialState="playing"
+            initialState="loading"
             version="1.0">
             
     <crop x="241" y="23" width="400" height="300" />
@@ -16,8 +16,24 @@
                 
 <!-- Set Colors for Paused Video -->
     <condition name="paused">
-        <color x="260" y="343" rgb="d3ffbd" />
+        <color x="260" y="343" rgb="5aee49" />
     </condition>
+    
+    <state name="loading">
+        <event>
+            <condition>
+                <and>
+                    <color x="361" y="346" rgb="12c80e" />
+                    <color x="376" y="346" rgb="12c80e" />
+                </and>
+            </condition>
+            <action>
+                <click x="260" y="343" />
+                <click x="1" y="1" />
+                <goto state="playing" />
+            </action>
+        </event>
+    </state>
     
 <!-- PLAYING -->
     <state name="playing">
