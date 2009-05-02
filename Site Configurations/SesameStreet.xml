@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site site="http://www.sesamestreet.org"
+        plugin="http://www.sesamestreet.org/DAMAsset/street/videoQueue_400x300_detail_list.swf"
+            initialState="playing"
+            version="1.0">
+            
+    <crop x="241" y="23" width="400" height="300" />
+
+    <seekbar type="thumb">
+        <start x="273" y="351" />
+        <end   x="510" y="351" />
+        <played>
+            <color rgb="666666" />
+        </played>
+    </seekbar>
+                
+<!-- Set Colors for Paused Video -->
+    <condition name="paused">
+        <color x="260" y="343" rgb="d3ffbd" />
+    </condition>
+    
+<!-- PLAYING -->
+    <state name="playing">
+        
+<!-- Click to pause -->
+        <event>
+            <condition>
+                <command name="pause" />
+            </condition>
+            <action>
+                <click x="260" y="343" />
+                <click x="1" y="1" />
+            </action>
+        </event>
+
+<!-- Detect paused video -->
+        <event>
+            <condition>
+                <condition name="paused" />
+            </condition>
+            <action>
+                <goto state="paused" />
+            </action>
+        </event>
+    </state>
+        
+    
+<!-- PAUSED -->
+    <state name="paused">
+        <event>
+            <condition>
+                <command name="play" />
+            </condition>
+            <action>
+                <click x="260" y="343" />
+                <click x="1" y="1" />
+            </action>
+        </event>
+                
+<!-- Go To Playing -->
+        <event>
+            <condition>
+                <not>
+                    <condition name="paused" />
+                </not>
+            </condition>
+            <action>
+                <goto state="playing" />
+            </action>
+        </event>
+        
+    </state>
+</site>
