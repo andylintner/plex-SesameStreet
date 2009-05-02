@@ -4,6 +4,7 @@ from PMS.Objects import *
 from PMS.Shortcuts import *
 
 WEB_ROOT = 'http://www.sesamestreet.org'
+SEARCH_PAGE = 'http://www.sesamestreet.org/browseallvideos?p_p_lifecycle=0&p_p_id=BrowseAndPlayContents_WAR_sesameportlets4369&p_p_action=localSearch'
 
 CACHE_INTERVAL = 3600 * 6
 
@@ -21,13 +22,14 @@ def MainMenu():
   dir.Append(Function(DirectoryItem(Browse, title="By Subject"), url=WEB_ROOT+'/browsevideosbysubject', title='By Subject'))
   dir.Append(Function(DirectoryItem(Browse, title="By Theme"), url=WEB_ROOT+'/browsevideosbytheme', title='By Theme'))
   dir.Append(Function(DirectoryItem(Browse, title="By Character"), url=WEB_ROOT+'/browsevideosbycharacter', title='By Character'))
+  dir.Append(Function(SearchDirectoryItem(Search, title=L("Search..."), prompt=L("Search for Videos"), thumb=R('search.png'))))
   return dir
   
 
 ####################################################################################################
-def Browse(sender, url, title = None, replaceParent=False):
+def Browse(sender, url, title = None, replaceParent=False, values=None):
     Log(sender)
-    page = XML.ElementFromURL(url, cacheTime=1200, isHTML=True)
+    page = XML.ElementFromURL(url, cacheTime=1200, isHTML=True, values=values)
     dir = MediaContainer(title1="Sesame Street", title2=title, replaceParent=replaceParent)
     for tag in page.xpath("//div[@id='browse']/div/div/table/tr/td | //div[@id='browse']/div/div/div/table/tr/td"):
         """
@@ -76,4 +78,16 @@ def AddPager(page, dir, pageTitle):
         title = "Page "+next.text.strip()
         url = next.get('href')
         dir.Append(Function(DirectoryItem(Browse, title=title), url=url, title=pageTitle, replaceParent=True))
+    prev = page.xpath("//span[@class='nav-pagination']/a[@class='current']/preceding-sibling::a")
+    if prev:
+        prev = prev[0]
+        title = "Page "+prev.text.strip()
+        url = prev.get('href')
+        dir.Append(Function(DirectoryItem(Browse, title=title), url=url, title=pageTitle, replaceParent=True))
+    
+        
+####################################################################################################
+def Search(sender, query):
+    return Browse(sender, SEARCH_PAGE, title="Search Results", values={"p_p_sesameStreetKeyword":query})
+
     

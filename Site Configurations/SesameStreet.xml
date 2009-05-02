@@ -7,8 +7,8 @@
     <crop x="241" y="23" width="400" height="300" />
 
     <seekbar type="thumb">
-        <start x="273" y="351" />
-        <end   x="510" y="351" />
+        <start x="273" y="352" />
+        <end   x="510" y="352" />
         <played>
             <color rgb="666666" />
         </played>
@@ -16,7 +16,7 @@
                 
 <!-- Set Colors for Paused Video -->
     <condition name="paused">
-        <color x="260" y="343" rgb="5aee49" />
+        <color x="259" y="343" rgb="5aee49" />
     </condition>
     
     <state name="loading">
