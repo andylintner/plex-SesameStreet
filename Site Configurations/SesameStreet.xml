@@ -7,14 +7,16 @@
     <crop x="241" y="23" width="400" height="300" />
 
     <seekbar type="thumb">
-        <start x="273" y="352" />
-        <end   x="510" y="352" />
+        <start x="272" y="351" />
+        <end   x="512" y="351" />
         <played>
-            <color rgb="666666" />
+					<condition>
+           	<color op="dimmer-than" rgb="a0a0a0" />
+					</condition>
         </played>
     </seekbar>
                 
-<!-- Set Colors for Paused Video -->
+		<!-- Set Colors for Paused Video -->
     <condition name="paused">
         <color x="259" y="343" rgb="5aee49" />
     </condition>
@@ -30,15 +32,16 @@
             <action>
                 <click x="260" y="343" />
                 <click x="1" y="1" />
+								<pause time="1000" />
                 <goto state="playing" />
             </action>
         </event>
     </state>
     
-<!-- PLAYING -->
+		<!-- PLAYING -->
     <state name="playing">
         
-<!-- Click to pause -->
+			<!-- Click to pause -->
         <event>
             <condition>
                 <command name="pause" />
@@ -49,7 +52,7 @@
             </action>
         </event>
 
-<!-- Detect paused video -->
+					<!-- Detect paused video -->
         <event>
             <condition>
                 <condition name="paused" />
@@ -61,7 +64,7 @@
     </state>
         
     
-<!-- PAUSED -->
+		<!-- PAUSED -->
     <state name="paused">
         <event>
             <condition>
@@ -72,8 +75,18 @@
                 <click x="1" y="1" />
             </action>
         </event>
+				
+				<!-- Detect end of video -->
+        <event>
+            <condition>
+                <title matches="." />
+            </condition>
+            <action>
+								<goto state="end" />
+            </action>
+        </event>
                 
-<!-- Go To Playing -->
+				<!-- Go To Playing -->
         <event>
             <condition>
                 <not>

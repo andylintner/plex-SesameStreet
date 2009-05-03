@@ -11,6 +11,7 @@ CACHE_INTERVAL = 3600 * 6
 ####################################################################################################
 def Start():
   Plugin.AddPrefixHandler("/video/sesameStreet", MainMenu, 'Sesame Street', 'icon-default.jpg', 'art-default.jpg')
+  Plugin.AddViewGroup("Details", viewMode="InfoList", mediaType="items")
   MediaContainer.title1 = 'Sesame Street'
   MediaContainer.content = 'Items'
   MediaContainer.art = R('art-default.jpg')
@@ -24,11 +25,9 @@ def MainMenu():
   dir.Append(Function(DirectoryItem(Browse, title="By Character"), url=WEB_ROOT+'/browsevideosbycharacter', title='By Character'))
   dir.Append(Function(SearchDirectoryItem(Search, title=L("Search..."), prompt=L("Search for Videos"), thumb=R('search.png'))))
   return dir
-  
 
 ####################################################################################################
 def Browse(sender, url, title = None, replaceParent=False, values=None):
-    Log(sender)
     page = XML.ElementFromURL(url, cacheTime=1200, isHTML=True, values=values)
     dir = MediaContainer(title1="Sesame Street", title2=title, replaceParent=replaceParent)
     for tag in page.xpath("//div[@id='browse']/div/div/table/tr/td | //div[@id='browse']/div/div/div/table/tr/td"):
@@ -39,6 +38,7 @@ def Browse(sender, url, title = None, replaceParent=False, values=None):
         if tag.xpath(".//div[@class='browse-desc']/div//a")[0].get('onclick'):
             dir.Append(CreateCategory(tag))
         else:
+            dir.viewGroup='Details'
             dir.Append(CreateVideo(tag))
             
     AddPager(page, dir, title)  
@@ -48,7 +48,7 @@ def Browse(sender, url, title = None, replaceParent=False, values=None):
 ####################################################################################################
 def CreateVideo(tag):
     url = tag.xpath(".//div[@class='browse-desc']/div//a")[0].get('href')
-    return WebVideoItem(WEB_ROOT+url, GetTitle(tag), thumb=GetThumb(tag))
+    return WebVideoItem(WEB_ROOT+url, GetTitle(tag), thumb=GetThumb(tag), summary=GetSummary(tag), subtitle=GetSubtitle(tag))
 
 ####################################################################################################
 def CreateCategory(tag):
@@ -69,25 +69,37 @@ def GetTitle(tag):
 ####################################################################################################    
 def GetThumb(tag):
     return WEB_ROOT+tag.xpath(".//div[@class='thumb-image']/a/img")[0].get('src')
+
+####################################################################################################    
+def GetSubtitle(tag):
+    try:
+      return tag.xpath(".//div[@class='browse-desc']//span[@class='browse-subject']")[0].text.replace('Subject: ','')
+    except:
+      return ""
+
+####################################################################################################    
+def GetSummary(tag):
+    try:
+      list = [text for text in tag.xpath(".//div[@class='browse-desc']")[0].itertext()]
+      Log(list)
+      if len(list) > 2:
+        return list[2].strip()
+    except:
+      raise
     
 ####################################################################################################    
 def AddPager(page, dir, pageTitle):
     next = page.xpath("//span[@class='nav-pagination']/a[@class='current']/following-sibling::a")
     if next:
         next = next[0]
-        title = "Page "+next.text.strip()
         url = next.get('href')
-        dir.Append(Function(DirectoryItem(Browse, title=title), url=url, title=pageTitle, replaceParent=True))
+        dir.Append(Function(DirectoryItem(Browse, title=L("Next Page...")), url=url, title=pageTitle, replaceParent=True))
     prev = page.xpath("//span[@class='nav-pagination']/a[@class='current']/preceding-sibling::a")
     if prev:
         prev = prev[0]
-        title = "Page "+prev.text.strip()
         url = prev.get('href')
-        dir.Append(Function(DirectoryItem(Browse, title=title), url=url, title=pageTitle, replaceParent=True))
-    
+        dir.Append(Function(DirectoryItem(Browse, title=L("Previous Page...")), url=url, title=pageTitle, replaceParent=True))
         
 ####################################################################################################
 def Search(sender, query):
     return Browse(sender, SEARCH_PAGE, title="Search Results", values={"p_p_sesameStreetKeyword":query})
-
-    
